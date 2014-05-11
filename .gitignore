@@ -1,0 +1,9 @@
+*.8l
+*.out
+*.swp
+.DS_Store
+.sass-cache
+.tmp
+node_modules
+bower_components
+dist

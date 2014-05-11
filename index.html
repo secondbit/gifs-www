@@ -1,0 +1,55 @@
+<! doctype html>
+<html>
+	<head>
+		<title>gifs.io</title>
+		<style type="text/css">
+			progress {
+				width: 50%;
+				display: block;
+				margin: 0px auto;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Drop objects on me!</h1>
+		<ul id="items"></ul>
+		<progress id="progress" min="0" max="100" value="0">0</progress>
+		<script type="text/javascript">
+			b = document.querySelectorAll("body")[0];
+			ul = document.querySelectorAll("#items")[0];
+			progress = document.querySelectorAll("#progress")[0];
+			b.ondragover = function () { this.className = 'hover'; return false; }
+			b.ondragend = function () { this.className = ''; return false; }
+			b.ondrop = function (e) {
+				this.className = '';
+				e.preventDefault();
+				readfiles(e.dataTransfer.files);
+			};
+			function readfiles(files) {
+				var formData = new FormData();
+				for (var i = 0; i < files.length; i++) {
+					formData.append(files[i].name, files[i]);
+				}
+				progress.value = progress.innerHTML = 0;
+				// now post a new XHR request
+					var xhr = new XMLHttpRequest();
+					xhr.open('POST', '/');
+					xhr.onload = function() {
+						progress.value = progress.innerHTML = 0;
+						if(xhr.status == 200) {
+							li = document.createElement("li");
+							li.innerHTML = xhr.responseText;
+							ul.appendChild(li);
+						}
+					};
+					xhr.upload.onprogress = function (event) {
+						if (event.lengthComputable) {
+							var complete = (event.loaded / event.total * 100 | 0);
+							progress.value = progress.innerHTML = complete;
+						}
+					}
+					xhr.send(formData);
+			}
+		</script>
+	</body>
+</html>
